@@ -7,6 +7,14 @@ WORKDIR /app
 # Copy all files
 COPY . /app
 
+RUN groupadd -r app && useradd -r -g app appuser
+
+# give permissions to app directories
+RUN chown -R appuser:app /app
+
+# switch to non-root user for running the app
+USER appuser
+
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
@@ -18,3 +26,5 @@ ENV PYTHONPATH=/app
 
 # Run Streamlit
 CMD ["streamlit", "run", "app/dashboard.py", "--server.port=8504", "--server.address=0.0.0.0"]
+
+
