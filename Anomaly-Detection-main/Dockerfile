@@ -1,30 +1,22 @@
-# Base image
-FROM python:3.11-slim
-
-# Set working directory
 WORKDIR /app
 
-# Copy all files
+# Copy app files
 COPY . /app
 
-RUN groupadd -r app && useradd -r -g app appuser
-
-# give permissions to app directories
-RUN chown -R appuser:app /app
-
-# switch to non-root user for running the app
-USER appuser
-
-# Install dependencies
+# Install dependencies as root
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Create a non-root user
+RUN groupadd -r app && useradd -r -g app appuser
+
+# Change ownership
+RUN chown -R appuser:app /app
+
+# Switch to non-root user
+USER appuser
+
 # Expose Streamlit default port
-EXPOSE 8504
+EXPOSE 8501
 
-# Add this line before CMD
-ENV PYTHONPATH=/app
-
-# Run Streamlit
-CMD ["streamlit", "run", "app/dashboard.py", "--server.port=8504", "--server.address=0.0.0.0"]
-
-
+# Command to run your app
+CMD ["streamlit", "run", "app.py"]
